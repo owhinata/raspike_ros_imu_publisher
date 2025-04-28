@@ -21,14 +21,15 @@ class ImuPublisher(Node):
 
     def status_on_subscribe(self, status):
         msg = Imu()
-        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.stamp.sec = status.timestamp_usec // 1000000
+        msg.header.stamp.nanosec = (status.timestamp_usec % 1000000) * 1000
         msg.header.frame_id = "imu_frame"
-        msg.angular_velocity.x = np.deg2rad(status.angular_velocity[0]).item()
-        msg.angular_velocity.y = np.deg2rad(status.angular_velocity[1]).item()
-        msg.angular_velocity.z = np.deg2rad(status.angular_velocity[2]).item()
-        msg.linear_acceleration.x = status.linear_acceleration[0].item() * 1e-3
-        msg.linear_acceleration.y = status.linear_acceleration[1].item() * 1e-3
-        msg.linear_acceleration.z = status.linear_acceleration[2].item() * 1e-3
+        msg.angular_velocity.x = status.angular_velocity[0].item()
+        msg.angular_velocity.y = status.angular_velocity[1].item()
+        msg.angular_velocity.z = status.angular_velocity[2].item()
+        msg.linear_acceleration.x = status.linear_acceleration[0].item()
+        msg.linear_acceleration.y = status.linear_acceleration[1].item()
+        msg.linear_acceleration.z = status.linear_acceleration[2].item()
         msg.angular_velocity_covariance = [
             0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
         msg.linear_acceleration_covariance = [
